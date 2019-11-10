@@ -36,16 +36,17 @@ import com.google.android.material.snackbar.Snackbar
 import java.util.ArrayList
 
 /**
- * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
+显示一个[Task]列表，用户可以选择查看所有活动、或者完成的任务
  */
 class TasksFragment : Fragment() {
-
     private lateinit var viewDataBinding: TasksFragBinding
     private lateinit var listAdapter: TasksAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View? {
+        //解析布局，创建DataBinding
         viewDataBinding = TasksFragBinding.inflate(inflater, container, false).apply {
+            //创建ViewModel
             viewmodel = (activity as TasksActivity).obtainViewModel()
         }
         setHasOptionsMenu(true)
@@ -54,12 +55,14 @@ class TasksFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        //开始加载所有Task
         viewDataBinding.viewmodel?.start()
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
             when (item.itemId) {
                 R.id.menu_clear -> {
+                    //清楚所有Task
                     viewDataBinding.viewmodel?.clearCompletedTasks()
                     true
                 }
@@ -68,6 +71,7 @@ class TasksFragment : Fragment() {
                     true
                 }
                 R.id.menu_refresh -> {
+                    //强制刷新所有Task
                     viewDataBinding.viewmodel?.loadTasks(true)
                     true
                 }
@@ -81,14 +85,19 @@ class TasksFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewDataBinding.viewmodel?.let {
+            //观察snackbarMessage信息改变，显示Snackbar
             view?.setupSnackbar(this, it.snackbarMessage, Snackbar.LENGTH_LONG)
         }
-        viewDataBinding.setLifecycleOwner(this.viewLifecycleOwner)
+        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+
         setupFab()
         setupListAdapter()
         setupRefreshLayout()
     }
 
+    /**
+     * 展示过滤菜单
+     */
     private fun showFilteringPopUpMenu() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
         PopupMenu(requireContext(), view).run {
@@ -112,6 +121,7 @@ class TasksFragment : Fragment() {
     }
 
     private fun setupFab() {
+        //设置添加按钮
         activity?.findViewById<FloatingActionButton>(R.id.fab_add_task)?.let {
             it.setImageResource(R.drawable.ic_add)
             it.setOnClickListener {
@@ -121,6 +131,7 @@ class TasksFragment : Fragment() {
     }
 
     private fun setupListAdapter() {
+        //设置列表适配器
         val viewModel = viewDataBinding.viewmodel
         if (viewModel != null) {
             listAdapter = TasksAdapter(ArrayList(0), viewModel)

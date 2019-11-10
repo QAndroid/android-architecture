@@ -1,22 +1,7 @@
-/*
- * Copyright 2017, The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.architecture.blueprints.todoapp.util
 
 /**
- * Extension functions for View and subclasses of View.
+ * View和它的子View的扩展方法
  */
 
 import android.view.View
@@ -31,11 +16,13 @@ import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import com.google.android.material.snackbar.Snackbar
 
 /**
- * Transforms static java function Snackbar.make() to an extension function on View.
+ * 将静态Java函数Snackbar.make()转换为视图中的扩展函数
  */
+//扩展函数，参考：https://juejin.im/post/5c74add5f265da2da15dc75b
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
+    //run范围函数，为调用函数提供一个内部范围，参考：https://juejin.im/post/5a676159f265da3e3c6c4d82
     Snackbar.make(this, snackbarText, timeLength).run {
-        addCallback(object: Snackbar.Callback() {
+        addCallback(object : Snackbar.Callback() {
             override fun onShown(sb: Snackbar?) {
                 EspressoIdlingResource.increment()
             }
@@ -49,14 +36,16 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int) {
 }
 
 /**
- * Triggers a snackbar message when the value contained by snackbarTaskMessageLiveEvent is modified.
+ * 当修改snackbarTaskMessageLiveEvent包含的值时，触发snackbar消息
  */
 fun View.setupSnackbar(
-    lifecycleOwner: LifecycleOwner,
-    snackbarEvent: LiveData<Event<Int>>,
-    timeLength: Int
+        lifecycleOwner: LifecycleOwner,
+        snackbarEvent: LiveData<Event<Int>>,
+        timeLength: Int
 ) {
 
+    //观察Fragment生命周期，只要内容变化，且没有被使用过则提示信息
+    //LiveData，参考：https://developer.android.com/topic/libraries/architecture/livedata
     snackbarEvent.observe(lifecycleOwner, Observer { event ->
         event.getContentIfNotHandled()?.let {
             showSnackbar(context.getString(it), timeLength)

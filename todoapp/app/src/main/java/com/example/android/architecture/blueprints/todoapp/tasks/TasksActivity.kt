@@ -32,7 +32,9 @@ import com.example.android.architecture.blueprints.todoapp.util.replaceFragmentI
 import com.example.android.architecture.blueprints.todoapp.util.setupActionBar
 import com.google.android.material.navigation.NavigationView
 
-
+/**
+ * TasksActivity页面
+ */
 class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -43,23 +45,29 @@ class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tasks_act)
 
+        //设置ActionBar
         setupActionBar(R.id.toolbar) {
             setHomeAsUpIndicator(R.drawable.ic_menu)
             setDisplayHomeAsUpEnabled(true)
         }
 
+        //设置抽屉导航
         setupNavigationDrawer()
 
+        //设置TasksFragment
         setupViewFragment()
 
+        //标准函数apply
         viewModel = obtainViewModel().apply {
+            //订阅打开任务详情事件
             openTaskEvent.observe(this@TasksActivity, Observer<Event<String>> { event ->
+                //如果用户没有使用，则打开任务详情
                 event.getContentIfNotHandled()?.let {
                     openTaskDetails(it)
 
                 }
             })
-            // Subscribe to "new task" event
+            //订阅"new task"事件
             newTaskEvent.observe(this@TasksActivity, Observer<Event<Unit>> { event ->
                 event.getContentIfNotHandled()?.let {
                     this@TasksActivity.addNewTask()
@@ -68,11 +76,17 @@ class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
         }
     }
 
+    /**
+     * 设置TasksFragment
+     */
     private fun setupViewFragment() {
         supportFragmentManager.findFragmentById(R.id.contentFrame)
             ?: replaceFragmentInActivity(TasksFragment.newInstance(), R.id.contentFrame)
     }
 
+    /**
+     * 设置抽屉导航栏
+     */
     private fun setupNavigationDrawer() {
         drawerLayout = (findViewById<DrawerLayout>(R.id.drawer_layout))
             .apply {
@@ -98,13 +112,14 @@ class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
                     // Do nothing, we're already on that screen
                 }
                 R.id.statistics_navigation_menu_item -> {
+                    //进入到StatisticsActivity页面
                     val intent = Intent(this@TasksActivity, StatisticsActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     }
                     startActivity(intent)
                 }
             }
-            // Close the navigation drawer when an item is selected.
+            //当item被选选中的时候，关闭导航抽屉
             menuItem.isChecked = true
             drawerLayout.closeDrawers()
             true
@@ -112,9 +127,13 @@ class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        //处理Activity返回结果
         viewModel.handleActivityResult(requestCode, resultCode)
     }
 
+    /**
+     * 打开任务详情页面
+     */
     override fun openTaskDetails(taskId: String) {
         val intent = Intent(this, TaskDetailActivity::class.java).apply {
             putExtra(TaskDetailActivity.EXTRA_TASK_ID, taskId)
@@ -123,10 +142,16 @@ class TasksActivity : AppCompatActivity(), TaskItemNavigator, TasksNavigator {
 
     }
 
+    /**
+     * 打开添加新任务页面
+     */
     override fun addNewTask() {
         val intent = Intent(this, AddEditTaskActivity::class.java)
         startActivityForResult(intent, AddEditTaskActivity.REQUEST_CODE)
     }
 
+    /**
+     * 获取TasksViewModel对象
+     */
     fun obtainViewModel(): TasksViewModel = obtainViewModel(TasksViewModel::class.java)
 }

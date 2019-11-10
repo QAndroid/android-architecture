@@ -36,8 +36,7 @@ const val DELETE_RESULT_OK = Activity.RESULT_FIRST_USER + 2
 const val EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 3
 
 /**
- * The `fragment` is added to the container view with id `frameId`. The operation is
- * performed by the `fragmentManager`.
+ * 这个'fragment'通过'frameId'添加到view容器中。这个操作通过'fragmentManager'执行
  */
 fun AppCompatActivity.replaceFragmentInActivity(fragment: Fragment, frameId: Int) {
     supportFragmentManager.transact {
@@ -55,18 +54,26 @@ fun AppCompatActivity.addFragmentToActivity(fragment: Fragment, tag: String) {
     }
 }
 
+/**
+ * AppCompatActivity扩展方法setupActionBar，可以在Activity中复用
+ */
 fun AppCompatActivity.setupActionBar(@IdRes toolbarId: Int, action: ActionBar.() -> Unit) {
+    //找到指定id的AactionBar，执行指定的动作action
     setSupportActionBar(findViewById(toolbarId))
     supportActionBar?.run {
         action()
     }
 }
 
+/**
+ * AppCompatActivity扩展方法obtainViewModel
+ * 创建指定类viewModelClass的ViewModel对象
+ */
 fun <T : ViewModel> AppCompatActivity.obtainViewModel(viewModelClass: Class<T>) =
         ViewModelProviders.of(this, ViewModelFactory.getInstance(application)).get(viewModelClass)
 
 /**
- * Runs a FragmentTransaction, then calls commit().
+ * 运行FragmentTransaction，然后调用commit()。
  */
 private inline fun FragmentManager.transact(action: FragmentTransaction.() -> Unit) {
     beginTransaction().apply {

@@ -27,16 +27,14 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetail
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 
 /**
- * A creator is used to inject the product ID into the ViewModel
- *
- *
- * This creator is to showcase how to inject dependencies into ViewModels. It's not
- * actually necessary in this case, as the product ID can be passed in a public method.
+ * 一个用于将产品Id注入到ViewModel的创建者
+ * 这个创建者将展示如何将依赖着注入到viewmodel中。在本例中实际上没有必要这样做，因为产品ID可以通过公共方法传递
  */
 class ViewModelFactory private constructor(
         private val tasksRepository: TasksRepository
 ) : ViewModelProvider.NewInstanceFactory() {
 
+    //根据modelClass类，创建viewModel
     override fun <T : ViewModel> create(modelClass: Class<T>) =
             with(modelClass) {
                 when {
@@ -53,6 +51,7 @@ class ViewModelFactory private constructor(
                 }
             } as T
 
+    //静态单例
     companion object {
 
         @SuppressLint("StaticFieldLeak")

@@ -31,15 +31,16 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Listens to user actions from the UI ({@link TasksFragment}), retrieves the data and updates the
- * UI as required.
+ * 从TasksFragment UI监听用户action，获取数据并根据要求更新UI
  */
 public class TasksPresenter implements TasksContract.Presenter {
 
+    //任务数据源
     private final TasksRepository mTasksRepository;
-
+    //TasksView实现
     private final TasksContract.View mTasksView;
 
+    //当前过滤类型
     private TasksFilterType mCurrentFiltering = TasksFilterType.ALL_TASKS;
 
     private boolean mFirstLoad = true;
@@ -47,7 +48,7 @@ public class TasksPresenter implements TasksContract.Presenter {
     public TasksPresenter(@NonNull TasksRepository tasksRepository, @NonNull TasksContract.View tasksView) {
         mTasksRepository = checkNotNull(tasksRepository, "tasksRepository cannot be null");
         mTasksView = checkNotNull(tasksView, "tasksView cannot be null!");
-
+        //将Presenter设置到View中
         mTasksView.setPresenter(this);
     }
 

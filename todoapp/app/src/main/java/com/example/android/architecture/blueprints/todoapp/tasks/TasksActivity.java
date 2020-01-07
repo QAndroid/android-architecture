@@ -35,6 +35,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.test.espresso.IdlingResource;
 
+/**
+ * 任务列表页面
+ */
 public class TasksActivity extends AppCompatActivity {
 
     private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
@@ -48,14 +51,14 @@ public class TasksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tasks_act);
 
-        // Set up the toolbar.
+        //设置Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
 
-        // Set up the navigation drawer.
+        //设置抽屉导航
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLayout.setStatusBarBackground(R.color.colorPrimaryDark);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -63,23 +66,20 @@ public class TasksActivity extends AppCompatActivity {
             setupDrawerContent(navigationView);
         }
 
-        TasksFragment tasksFragment =
-                (TasksFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
+        //展示Task列表Fragment
+        TasksFragment tasksFragment = (TasksFragment) getSupportFragmentManager().findFragmentById(R.id.contentFrame);
         if (tasksFragment == null) {
-            // Create the fragment
+            //创建tasksFragment
             tasksFragment = TasksFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(
-                    getSupportFragmentManager(), tasksFragment, R.id.contentFrame);
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), tasksFragment, R.id.contentFrame);
         }
 
-        // Create the presenter
-        mTasksPresenter = new TasksPresenter(
-                Injection.provideTasksRepository(getApplicationContext()), tasksFragment);
+        //创建presenter
+        mTasksPresenter = new TasksPresenter(Injection.provideTasksRepository(getApplicationContext()), tasksFragment);
 
-        // Load previously saved state, if available.
+        //如果有的话，加载前面保存的状态
         if (savedInstanceState != null) {
-            TasksFilterType currentFiltering =
-                    (TasksFilterType) savedInstanceState.getSerializable(CURRENT_FILTERING_KEY);
+            TasksFilterType currentFiltering = (TasksFilterType) savedInstanceState.getSerializable(CURRENT_FILTERING_KEY);
             mTasksPresenter.setFiltering(currentFiltering);
         }
     }
@@ -87,7 +87,6 @@ public class TasksActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(CURRENT_FILTERING_KEY, mTasksPresenter.getFiltering());
-
         super.onSaveInstanceState(outState);
     }
 
@@ -95,7 +94,7 @@ public class TasksActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Open the navigation drawer when the home icon is selected from the toolbar.
+                //当toolbar的home icon被选中的时候，打开抽屉导航栏
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
@@ -109,7 +108,7 @@ public class TasksActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.list_navigation_menu_item:
-                                // Do nothing, we're already on that screen
+                                //不用作任何事情，我们已经在屏幕上了
                                 break;
                             case R.id.statistics_navigation_menu_item:
                                 Intent intent =
@@ -119,7 +118,7 @@ public class TasksActivity extends AppCompatActivity {
                             default:
                                 break;
                         }
-                        // Close the navigation drawer when an item is selected.
+                        //在一个item选中的时候关闭导航栏
                         menuItem.setChecked(true);
                         mDrawerLayout.closeDrawers();
                         return true;

@@ -16,8 +16,13 @@
 
 package com.example.android.architecture.blueprints.todoapp;
 
+/**
+ * Presenter接口
+ */
 public interface BasePresenter {
 
+    /**
+     * 启动方法
+     */
     void start();
-
 }

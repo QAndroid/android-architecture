@@ -18,14 +18,18 @@ package com.example.android.architecture.blueprints.todoapp.tasks;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.widget.PopupMenu;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,10 +54,10 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Display a grid of {@link Task}s. User can choose to view all, active or completed tasks.
+ * 展示一个Task列表。用户可以选择查看全部，未完成或者已完成的任务
  */
 public class TasksFragment extends Fragment implements TasksContract.View {
-
+    //Tasks Presenter实现，负责执行用户的Action
     private TasksContract.Presenter mPresenter;
 
     private TasksAdapter mListAdapter;
@@ -87,6 +91,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
     @Override
     public void onResume() {
         super.onResume();
+        //开始获取任务列表
         mPresenter.start();
     }
 
@@ -106,13 +111,13 @@ public class TasksFragment extends Fragment implements TasksContract.View {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.tasks_frag, container, false);
 
-        // Set up tasks view
+        //设置任务列表相关视图
         ListView listView = (ListView) root.findViewById(R.id.tasks_list);
         listView.setAdapter(mListAdapter);
         mFilteringLabelView = (TextView) root.findViewById(R.id.filteringLabel);
         mTasksView = (LinearLayout) root.findViewById(R.id.tasksLL);
 
-        // Set up  no tasks view
+        //设置无任务相关视图
         mNoTasksView = root.findViewById(R.id.noTasks);
         mNoTaskIcon = (ImageView) root.findViewById(R.id.noTasksIcon);
         mNoTaskMainView = (TextView) root.findViewById(R.id.noTasksMain);
@@ -124,38 +129,35 @@ public class TasksFragment extends Fragment implements TasksContract.View {
             }
         });
 
-        // Set up floating action button
-        FloatingActionButton fab =
-                (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
-
+        //设置floating action button
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_task);
         fab.setImageResource(R.drawable.ic_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //执行添加新的任务action
                 mPresenter.addNewTask();
             }
         });
 
-        // Set up progress indicator
-        final ScrollChildSwipeRefreshLayout swipeRefreshLayout =
-                (ScrollChildSwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
+        //设置加载指示器
+        final ScrollChildSwipeRefreshLayout swipeRefreshLayout = (ScrollChildSwipeRefreshLayout) root.findViewById(R.id.refresh_layout);
         swipeRefreshLayout.setColorSchemeColors(
                 ContextCompat.getColor(getActivity(), R.color.colorPrimary),
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
         );
-        // Set the scrolling view in the custom SwipeRefreshLayout.
+        //在SwipeRefreshLayout中设置滑动的view
         swipeRefreshLayout.setScrollUpChild(listView);
-
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                //执行下拉刷新action
                 mPresenter.loadTasks(false);
             }
         });
 
         setHasOptionsMenu(true);
-
         return root;
     }
 
@@ -163,12 +165,15 @@ public class TasksFragment extends Fragment implements TasksContract.View {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_clear:
+                //执行所有任务action
                 mPresenter.clearCompletedTasks();
                 break;
             case R.id.menu_filter:
+                //展示过滤PopupMenu
                 showFilteringPopUpMenu();
                 break;
             case R.id.menu_refresh:
+                //执行刷新任务列表action
                 mPresenter.loadTasks(true);
                 break;
         }
@@ -207,11 +212,12 @@ public class TasksFragment extends Fragment implements TasksContract.View {
     }
 
     /**
-     * Listener for clicks on tasks in the ListView.
+     * 点击ListVeiw中的任务监听
      */
     TaskItemListener mItemListener = new TaskItemListener() {
         @Override
         public void onTaskClick(Task clickedTask) {
+            //执行打开任务详情action
             mPresenter.openTaskDetails(clickedTask);
         }
 
@@ -228,12 +234,11 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void setLoadingIndicator(final boolean active) {
-
+        //展示正在加载指示器
         if (getView() == null) {
             return;
         }
-        final SwipeRefreshLayout srl =
-                (SwipeRefreshLayout) getView().findViewById(R.id.refresh_layout);
+        final SwipeRefreshLayout srl = (SwipeRefreshLayout) getView().findViewById(R.id.refresh_layout);
 
         // Make sure setRefreshing() is called after the layout is done with everything else.
         srl.post(new Runnable() {
@@ -246,6 +251,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showTasks(List<Task> tasks) {
+        //展示任务列表
         mListAdapter.replaceData(tasks);
 
         mTasksView.setVisibility(View.VISIBLE);
@@ -254,6 +260,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showNoActiveTasks() {
+        //展示没有激活的任务列表
         showNoTasksViews(
                 getResources().getString(R.string.no_tasks_active),
                 R.drawable.ic_check_circle_24dp,
@@ -263,6 +270,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showNoTasks() {
+        //展示没有任务任务
         showNoTasksViews(
                 getResources().getString(R.string.no_tasks_all),
                 R.drawable.ic_assignment_turned_in_24dp,
@@ -272,6 +280,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showNoCompletedTasks() {
+        //展示没有完成的任务
         showNoTasksViews(
                 getResources().getString(R.string.no_tasks_completed),
                 R.drawable.ic_verified_user_24dp,
@@ -281,6 +290,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showSuccessfullySavedMessage() {
+        //展示成功保存消息
         showMessage(getString(R.string.successfully_saved_task_message));
     }
 
@@ -295,27 +305,32 @@ public class TasksFragment extends Fragment implements TasksContract.View {
 
     @Override
     public void showActiveFilterLabel() {
+        //展示活动过滤器标签
         mFilteringLabelView.setText(getResources().getString(R.string.label_active));
     }
 
     @Override
     public void showCompletedFilterLabel() {
+        //展示已完成过滤器标签
         mFilteringLabelView.setText(getResources().getString(R.string.label_completed));
     }
 
     @Override
     public void showAllFilterLabel() {
+        //展示所有过滤器标签
         mFilteringLabelView.setText(getResources().getString(R.string.label_all));
     }
 
     @Override
     public void showAddTask() {
+        //展示添加任务页面
         Intent intent = new Intent(getContext(), AddEditTaskActivity.class);
         startActivityForResult(intent, AddEditTaskActivity.REQUEST_ADD_TASK);
     }
 
     @Override
     public void showTaskDetailsUi(String taskId) {
+        //展示任务详情UI
         // in it's own Activity, since it makes more sense that way and it gives us the flexibility
         // to show some Intent stubbing.
         Intent intent = new Intent(getContext(), TaskDetailActivity.class);

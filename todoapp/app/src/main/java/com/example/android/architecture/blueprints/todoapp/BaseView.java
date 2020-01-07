@@ -16,8 +16,15 @@
 
 package com.example.android.architecture.blueprints.todoapp;
 
+/**
+ * View的基本接口
+ * @param <T>
+ */
 public interface BaseView<T> {
 
+    /**
+     * 设置View对应的Presenter
+     * @param presenter
+     */
     void setPresenter(T presenter);
-
 }

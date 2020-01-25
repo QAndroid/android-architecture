@@ -49,7 +49,7 @@ import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
 /**
- * Unit tests for the implementation of [TasksViewModel]
+ * TasksViewModel实现单元测试
  */
 class TasksViewModelTest {
 
@@ -63,13 +63,12 @@ class TasksViewModelTest {
 
     @Before
     fun setupTasksViewModel() {
-        // Mockito has a very convenient way to inject mocks by using the @Mock annotation. To
-        // inject the mocks in the test the initMocks method needs to be called.
+        // 通过使用@Mock注释，Mockito可以非常方便地注入mock。要在注释中注入模拟，需要调用initMocks犯法。
         MockitoAnnotations.initMocks(this)
 
         setupContext()
 
-        // Get a reference to the class under test
+        // 获取要测试的类的引用
         tasksViewModel = TasksViewModel(tasksRepository)
 
         // We initialise the tasks to 3, with one active and two completed
@@ -98,8 +97,7 @@ class TasksViewModelTest {
 
     @Test
     fun loadAllTasksFromRepository_dataLoaded() {
-        // Given an initialized TasksViewModel with initialized tasks
-        // When loading of Tasks is requested
+        //给定一个初始化的TasksViewModel，在请求加载任务时带有初始化的任务
         tasksViewModel.setFiltering(TasksFilterType.ALL_TASKS)
         tasksViewModel.loadTasks(true)
 

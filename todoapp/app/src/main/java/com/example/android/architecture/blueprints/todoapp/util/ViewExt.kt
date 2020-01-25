@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 
 /**
  * 将静态Java函数Snackbar.make()转换为视图中的扩展函数
+ * //FIXME，又是扩展函数，有表这样写吗？
  */
 //扩展函数，参考：https://juejin.im/post/5c74add5f265da2da15dc75b
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
@@ -37,6 +38,7 @@ fun View.showSnackbar(snackbarText: String, timeLength: Int) {
 
 /**
  * 当修改snackbarTaskMessageLiveEvent包含的值时，触发snackbar消息
+ * //FIXME 为什么要封装View的扩展方法，直接注册不久OK？
  */
 fun View.setupSnackbar(
         lifecycleOwner: LifecycleOwner,
